@@ -82,8 +82,9 @@ contract TohyoDapp {
     function registerVoter(adddress _voter) 
         external
         onlyOwner
-        atStage(VotingStage.Registration) {
-            require(!voters[_voter].isRegistered, "Voter already registered");
+        atStage(VotingStage.Registration)
+    {
+        require(!voters[_voter].isRegistered, "Voter already registered");
 
         voters[_voter] = VoterInfo({
             voterAddress: _voter,
@@ -117,5 +118,22 @@ contract TohyoDapp {
         candidateAddresses[_candidateAddress] = true;
 
         emit CandidateAdded(candidateId, _name, _candidateAddress);
+    }
+
+    function vote(uint256 _candidateId) 
+        external
+        atStage(VotingStage.Voting) 
+    {
+        VoterInfo storage voter = voters[msg.sender];
+
+        require(voter.isRegistered, "Voter not registered");
+        require(!voter.hasVoted, "Voter already voted");
+        require(block.timestamp >= votingStartTime && block.timestamp <= votingEndTime, "Voting period over");
+        require(candidates[_candidateId].isRegistered, "Invalid candidate");
+
+        voter.hasVoted = true;
+        candidates[_candidateId].voteCount++;
+
+        emit VoteCast(msg.sender, _candidateId, block.timestamp);
     }
 }   
