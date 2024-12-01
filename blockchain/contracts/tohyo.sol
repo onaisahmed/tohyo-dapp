@@ -136,4 +136,17 @@ contract TohyoDapp {
 
         emit VoteCast(msg.sender, _candidateId, block.timestamp);
     }
+
+    function changeStage(VotingStage _newStage) external onlyOwner {
+        currentStage = _newStage;
+        emit VotingStageChanged(_newStage);
+    }
+
+    function getTotalVoters() external view returns (uint256) {
+        return registeredVoters.length;
+    }
+
+    function getTotalCandidates() external view returns (uint256) {
+        return registeredCandidateIds.length;
+    }
 }   
