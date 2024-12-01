@@ -149,4 +149,25 @@ contract TohyoDapp {
     function getTotalCandidates() external view returns (uint256) {
         return registeredCandidateIds.length;
     }
+
+    function getResults() 
+        external 
+        view 
+        returns (Candidate[] memory) 
+    {
+        require(
+            currentStage == VotingStage.Tallying || 
+            currentStage == VotingStage.Completed, 
+            "Results not available"
+        );
+
+        Candidate[] memory results = new Candidate[](registeredCandidateIds.length);
+        
+        for (uint256 i = 0; i < registeredCandidateIds.length; i++) {
+            results[i] = candidates[registeredCandidateIds[i]];
+        }
+
+        return results;
+    }
 }   
+
