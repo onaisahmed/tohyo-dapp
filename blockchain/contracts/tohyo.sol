@@ -50,5 +50,32 @@ contract TohyoDapp {
     event CandidateAdded(uint256 indexed candidateId, string name, address candidateAddress);
     event VoteCast(address indexed voter, uint256 candidateId, uint256 timestamp);
     event VotingStageChanged(VotingStage newStage);
-    
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    modifier atStage(VotingStage _stage) {
+        require(currentStage == _stage, "Invalid voting stage");
+        _;
+    }
+
+    /**
+     * @notice Constructor to initialize the voting system
+     * @param _votingDuration Duration of the voting period in seconds
+     */
+    constructor(uint256 _votingDuration) {
+        require(
+            _votingDuration >= MIN_VOTING_DURATION && 
+            _votingDuration <= MAX_VOTING_DURATION, 
+            "Invalid voting duration"
+        );
+
+        owner = msg.sender;
+        currentStage = VotingStage.Registration;
+
+        votingStartTime = block.timestamp;
+        votingEndTime = votingStartTime + _votingDuration;
+    }
 }   
