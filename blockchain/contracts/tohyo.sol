@@ -30,4 +30,19 @@ contract TohyoDapp {
         bool hasVoted;
         uint256 registrationTimestamp;
     }
-}
+
+    address public owner;
+    VotingStage public currentStage;
+
+    mapping (address => VoterInfo) voters;
+    mapping (uint256 => Candidate) candidates;
+    mapping (address => bool) public candidateAddresses;
+
+    address[] public registeredVoters;
+    uint256[] public registeredCandidateIds;
+
+    uint256 public votingStartTime;
+    uint256 public votingEndTime;
+    uint256 private constant MAX_VOTING_DURATION = 2 days;
+    uint private constant MIX_VOTING_DURATION = 1 days;
+}   
