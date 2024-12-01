@@ -79,7 +79,7 @@ contract TohyoDapp {
         votingEndTime = votingStartTime + _votingDuration;
     }
 
-    function registerVoter(adddress _voter) 
+    function registerVoter(address _voter) 
         external
         onlyOwner
         atStage(VotingStage.Registration)
@@ -91,7 +91,7 @@ contract TohyoDapp {
             isRegistered: true,
             hasVoted: false,
             registrationTimestamp: block.timestamp
-        })
+        });
 
         registeredVoters.push(_voter);
         emit VoterRegistered(_voter, block.timestamp);
@@ -100,7 +100,7 @@ contract TohyoDapp {
     function addCandidate(
         string memory _name,
         string memory _description,
-        adddress _candidateAddress
+        address _candidateAddress
     ) external onlyOwner atStage(VotingStage.Registration) {
         require(!candidateAddresses[_candidateAddress], "Candidate already registered");
 
