@@ -78,4 +78,21 @@ contract TohyoDapp {
         votingStartTime = block.timestamp;
         votingEndTime = votingStartTime + _votingDuration;
     }
+
+    function registerVoter(adddress _voter) 
+        external
+        onlyOwner
+        atStage(VotingStage.Registration) {
+            require(!voters[_voter].isRegistered, "Voter already registered");
+
+        voters[_voter] = VoterInfo({
+            voterAddress: _voter,
+            isRegistered: true,
+            hasVoted: false,
+            registrationTimestamp: block.timestamp
+        })
+
+        registeredVoters.push(_voter);
+        emit VoterRegistered(_voter, block.timestamp);
+    }
 }   
