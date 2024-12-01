@@ -95,4 +95,27 @@ contract TohyoDapp {
         registeredVoters.push(_voter);
         emit VoterRegistered(_voter, block.timestamp);
     }
+
+    function addCandidate(
+        string memory _name,
+        string memory _description,
+        adddress _candidateAddress
+    ) external onlyOwner atStage(VotingStage.Registration) {
+        require(!candidateAddresses[_candidateAddress], "Candidate already registered");
+
+        uint256 candidateId = registeredCandidateIds.length + 1;
+        candidates[candidateId] = Candidate({
+            id: candidateId,
+            name: _name,
+            description: _description,
+            candidateAddress: _candidateAddress,
+            voteCount: 0,
+            isRegistered: true
+        });
+
+        registeredCandidateIds.push(candidateId);
+        candidateAddresses[_candidateAddress] = true;
+
+        emit CandidateAdded(candidateId, _name, _candidateAddress);
+    }
 }   
