@@ -7,7 +7,6 @@ pragma solidity ^0.8.24;
  * @dev Implements advanced voting logic with multiple security layers
  */
 contract TohyoDapp {
-
     enum VotingStage {
         Registration,
         Voting,
@@ -34,9 +33,9 @@ contract TohyoDapp {
     address public owner;
     VotingStage public currentStage;
 
-    mapping (address => VoterInfo) voters;
-    mapping (uint256 => Candidate) candidates;
-    mapping (address => bool) public candidateAddresses;
+    mapping(address => VoterInfo) voters;
+    mapping(uint256 => Candidate) candidates;
+    mapping(address => bool) public candidateAddresses;
 
     address[] public registeredVoters;
     uint256[] public registeredCandidateIds;
@@ -47,8 +46,16 @@ contract TohyoDapp {
     uint256 private constant MIN_VOTING_DURATION = 1 days;
 
     event VoterRegistered(address indexed voter, uint256 timestamp);
-    event CandidateAdded(uint256 indexed candidateId, string name, address candidateAddress);
-    event VoteCast(address indexed voter, uint256 candidateId, uint256 timestamp);
+    event CandidateAdded(
+        uint256 indexed candidateId,
+        string name,
+        address candidateAddress
+    );
+    event VoteCast(
+        address indexed voter,
+        uint256 candidateId,
+        uint256 timestamp
+    );
     event VotingStageChanged(VotingStage newStage);
 
     modifier onlyOwner() {
@@ -67,8 +74,8 @@ contract TohyoDapp {
      */
     constructor(uint256 _votingDuration) {
         require(
-            _votingDuration >= MIN_VOTING_DURATION && 
-            _votingDuration <= MAX_VOTING_DURATION, 
+            _votingDuration >= MIN_VOTING_DURATION &&
+                _votingDuration <= MAX_VOTING_DURATION,
             "Invalid voting duration"
         );
 
@@ -79,11 +86,9 @@ contract TohyoDapp {
         votingEndTime = votingStartTime + _votingDuration;
     }
 
-    function registerVoter(address _voter) 
-        external
-        onlyOwner
-        atStage(VotingStage.Registration)
-    {
+    function registerVoter(
+        address _voter
+    ) external onlyOwner atStage(VotingStage.Registration) {
         require(!voters[_voter].isRegistered, "Voter already registered");
 
         voters[_voter] = VoterInfo({
@@ -102,7 +107,10 @@ contract TohyoDapp {
         string memory _description,
         address _candidateAddress
     ) external onlyOwner atStage(VotingStage.Registration) {
-        require(!candidateAddresses[_candidateAddress], "Candidate already registered");
+        require(
+            !candidateAddresses[_candidateAddress],
+            "Candidate already registered"
+        );
 
         uint256 candidateId = registeredCandidateIds.length + 1;
         candidates[candidateId] = Candidate({
@@ -120,15 +128,16 @@ contract TohyoDapp {
         emit CandidateAdded(candidateId, _name, _candidateAddress);
     }
 
-    function vote(uint256 _candidateId) 
-        external
-        atStage(VotingStage.Voting) 
-    {
+    function vote(uint256 _candidateId) external atStage(VotingStage.Voting) {
         VoterInfo storage voter = voters[msg.sender];
 
         require(voter.isRegistered, "Voter not registered");
         require(!voter.hasVoted, "Voter already voted");
-        require(block.timestamp >= votingStartTime && block.timestamp <= votingEndTime, "Voting period over");
+        require(
+            block.timestamp >= votingStartTime &&
+                block.timestamp <= votingEndTime,
+            "Voting period over"
+        );
         require(candidates[_candidateId].isRegistered, "Invalid candidate");
 
         voter.hasVoted = true;
@@ -150,24 +159,26 @@ contract TohyoDapp {
         return registeredCandidateIds.length;
     }
 
-    function getResults() 
-        external 
-        view 
-        returns (Candidate[] memory) 
-    {
+    function getResults() external view returns (Candidate[] memory) {
         require(
-            currentStage == VotingStage.Tallying || 
-            currentStage == VotingStage.Completed, 
+            currentStage == VotingStage.Tallying ||
+                currentStage == VotingStage.Completed,
             "Results not available"
         );
 
-        Candidate[] memory results = new Candidate[](registeredCandidateIds.length);
-        
+        Candidate[] memory results = new Candidate[](
+            registeredCandidateIds.length
+        );
+
         for (uint256 i = 0; i < registeredCandidateIds.length; i++) {
             results[i] = candidates[registeredCandidateIds[i]];
         }
 
         return results;
     }
-}   
 
+    function getCandidate(uint256 _id) public view returns (Candidate memory) {
+        Candidate memory candidate = candidates[_id];
+        return candidate;
+    }
+}
