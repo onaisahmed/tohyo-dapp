@@ -82,7 +82,7 @@ async function main() {
  * @param {string} networkName - Name of the network
  */
 function saveDeploymentDetails(deploymentInfo, networkName) {
-  const deploymentsDir = path.join(__dirname, "../deployments");
+  const deploymentsDir = path.join(__dirname, "../../frontend/src/deployments");
   if (!fs.existsSync(deploymentsDir)) {
     fs.mkdirSync(deploymentsDir);
   }
