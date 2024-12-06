@@ -1,4 +1,8 @@
 import React from "react";
+import contractData from "../deployments/localhost-deployment.json";
+
+const CONTRACT_ADDRESS = contractData.contractAddress;
+const CONTRACT_ABI = contractData.abi;
 
 const TohyoDapp = () => {
   return (
